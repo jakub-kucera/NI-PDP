@@ -1,8 +1,8 @@
 # This is a sample Python script.
 import os
+from datetime import datetime
 
-
-PROGRAM_FILE_PATH = "../cmake-build-debug/NI_PDP"
+PROGRAM_FILE_PATH = "../main"
 GRAPHS = [
     {
         "path": "graf_10_3.txt",
@@ -100,11 +100,17 @@ GRAPHS = [
 def main():
     for testcase in GRAPHS:
         print(50*"=")
-        print(f"RUNNING {testcase['path']}")
+        print(f"RUNNING {testcase['path']},")
+        print(testcase)
         graph_path = f"../graphs/{testcase['path']}"
-        stream_project = os.popen(f"{PROGRAM_FILE_PATH} {graph_path} {testcase['max_weight']}")# {sdaf}")
+
+        start = datetime.now()
+        stream_project = os.popen(f"{PROGRAM_FILE_PATH} {graph_path} 0")# {sdaf}")
         output = stream_project.read()
         print(output)
+        end = datetime.now()
+        print(f"Runtime: {end - start}")
+
 
 
 # Press the green button in the gutter to run the script.

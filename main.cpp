@@ -65,7 +65,7 @@ Edge edges[300];
 
 uint64_t calc_sum_of_rest_of_weights(uint16_t current_edge) {
     uint64_t sum = 0;
-    for (int i = current_edge + 1; i < edges_count; i++) {
+    for (int i = current_edge; i < edges_count; i++) {
         sum += edges[i].weight;
     }
     return sum;
@@ -83,8 +83,6 @@ uint64_t rec_func(uint16_t current_edge, uint64_t current_weight) {
     ref_func_call_counter++;
     // check
 
-    Edge *c_edge = &(edges[current_edge]);
-
     // TODO somehow check for
     // >> "Větev ukončíme, i pokud v daném mezistavu zjistíme, že výsledný podgraf nebude souvislý, neboť pro souvislý podgraf musí platit |E|>=|V|-1."
 
@@ -94,17 +92,19 @@ uint64_t rec_func(uint16_t current_edge, uint64_t current_weight) {
             // TODO check if graph is 'souvisly'
             current_max_weight_found = current_weight;
             // TODO store current config
-            std::cout << "NEW MAX WEIGHT: " << current_max_weight_found << std::endl;
+//            std::cout << "NEW MAX WEIGHT: " << current_max_weight_found << std::endl;
             return current_weight;  // return smth else?
         }
         return 0;
     }
-//
-//    if (current_max_weight_found > 0) {
-//        if ((current_weight + calc_sum_of_rest_of_weights(current_edge)) < current_max_weight_found) {
-//            return 0;
-//        }
-//    }
+
+    Edge *c_edge = &(edges[current_edge]);
+
+    if (current_max_weight_found > 0) {
+        if ((current_weight + calc_sum_of_rest_of_weights(current_edge)) < current_max_weight_found) {
+            return 0;
+        }
+    }
 
     // check vertexes - 1 already colored, both colored (same, different)
     if (vertex_colors[c_edge->a_vertex] == NO_COLOR  && vertex_colors[c_edge->b_vertex] == NO_COLOR) {
@@ -177,16 +177,16 @@ uint64_t rec_func(uint16_t current_edge, uint64_t current_weight) {
 
 
 int main(int argc, char *argv[]) {
-    int max_weight;
+    int core_count;
     std::string filepath;
     /* check input argument */
     if (argc != 3) {
         return 1;
     }
 //    max_weight = int(argv[2])
-    max_weight = stoi(argv[2]);
+    core_count = stoi(argv[2]);
     filepath = std::string(argv[1]);
-    std::cout << "Weight: " << max_weight << ", Filepath: " << filepath << std::endl;
+    std::cout << "core_count: " << core_count << ", Filepath: " << filepath << std::endl;
 
     // TODO load graph
     std::ifstream infile(filepath);
@@ -240,4 +240,5 @@ int main(int argc, char *argv[]) {
     rec_func(0, 0);
 
     std::cout << "MAX WEIGHT: " << current_max_weight_found << " in REC calls " << ref_func_call_counter << std::endl;
+//    std::cout << current_max_weight_found << std::endl;
 }
