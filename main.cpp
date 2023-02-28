@@ -13,7 +13,6 @@ struct Edge {
     uint8_t a_vertex = UINT8_MAX;
     uint8_t b_vertex = UINT8_MAX;
     uint8_t weight;
-//    uint8_t color;
     bool is_used = false;
 
     // generated comparators by Clion
@@ -41,7 +40,6 @@ uint8_t vertex_colors[50];
 uint8_t vertex_colors_best_solution[50];
 uint8_t vertex_colors_tmp[50];
 int vertex_count;
-//uint8_t all_vertex[50][50];
 int vertex_edges[50][50];
 uint16_t edges_count = 0;
 Edge edges[300];
@@ -72,17 +70,14 @@ uint64_t calc_sum_of_rest_of_weights(uint16_t current_edge) {
     }
     return sum;
 }
-//int main() {
-//    std::cout << "Hello, World!" << std::endl;
-//    return 0;
-//}
+
 
 void color_graph_rec(uint8_t vertex) {
-    if (vertex_colors_tmp[vertex] == 1) {
+    if (vertex_colors_tmp[vertex] == RED) {
         return;
     }
 
-    vertex_colors_tmp[vertex] = 1;
+    vertex_colors_tmp[vertex] = RED;
 
     for (int i = 0; i < vertex_count; i++) {
         if (vertex_edges[vertex][i] > 0) {
@@ -97,7 +92,7 @@ bool check_consistency() {
 
     // reset tmp array for consistency check
     for (int i = 0; i < vertex_count; i++) {
-        vertex_colors_tmp[i] = 0;
+        vertex_colors_tmp[i] = NO_COLOR;
     }
 
     // color
@@ -105,7 +100,7 @@ bool check_consistency() {
 
     // check if all colored
     for (int i = 0; i < vertex_count; i++) {
-        if (vertex_colors_tmp[i] == 0) {
+        if (vertex_colors_tmp[i] == NO_COLOR) {
             return false;
         }
     }
@@ -114,17 +109,13 @@ bool check_consistency() {
 
 //GraphState graph = GraphState();
 
-//
-uint64_t rec_func(uint16_t current_edge, uint64_t current_weight, uint16_t used_edges) {
+void rec_func(uint16_t current_edge, uint64_t current_weight, uint16_t used_edges) {
     ref_func_call_counter++;
-    // check
 
     // check for
     // >> "Větev ukončíme, i pokud v daném mezistavu zjistíme, že výsledný podgraf nebude souvislý, neboť pro souvislý podgraf musí platit |E|>=|V|-1."
-    // TODO check, is not helping
-//    cout << used_edges << " + (" << edges_count << " - " << current_edge << -1 << ")) <= " << vertex_count
     if ((used_edges + (edges_count - (current_edge-1))) <= vertex_count-1) {
-        return 0;
+        return;
     }
 
 
@@ -136,20 +127,20 @@ uint64_t rec_func(uint16_t current_edge, uint64_t current_weight, uint16_t used_
                 current_max_weight_found = current_weight;
                 memcpy( vertex_colors_best_solution, vertex_colors, sizeof(vertex_colors_best_solution) );
 //            std::cout << "NEW MAX WEIGHT: " << current_max_weight_found << std::endl;
-                return current_weight;  // return smth else?
+                return;  // return smth else?
             }
             else {
 //                std::cout << "NOT CONSISTENT" << std::endl;
             }
         }
-        return 0;
+        return;
     }
 
     Edge *c_edge = &(edges[current_edge]);
 
     if (current_max_weight_found > 0) {
         if ((current_weight + calc_sum_of_rest_of_weights(current_edge)) < current_max_weight_found) {
-            return 0;
+            return;
         }
     }
 
@@ -219,7 +210,7 @@ uint64_t rec_func(uint16_t current_edge, uint64_t current_weight, uint16_t used_
         rec_func(current_edge + 1, current_weight, used_edges);
     }
 
-    return 0; // TODO change to max found weight? or just return None
+    return;
 }
 
 
@@ -230,32 +221,22 @@ int main(int argc, char *argv[]) {
     if (argc != 3) {
         return 1;
     }
-//    max_weight = int(argv[2])
     core_count = stoi(argv[2]);
     filepath = std::string(argv[1]);
-    std::cout << "core_count: " << core_count << ", Filepath: " << filepath << std::endl;
+//    std::cout << "core_count: " << core_count << ", Filepath: " << filepath << std::endl;
 
-    // TODO load graph
+    // load graph
     std::ifstream infile(filepath);
-//    int vertex_count;
     infile >> vertex_count;
 //    std::cout << "vertex_count: " << vertex_count << std::endl;
 
     // first load all edges data into memory
     for (int i = 0; i < vertex_count; i++) {
-//        for (int j = 0; j <= i; j++) {
         for (int j = 0; j < vertex_count; j++) {
             int weight;
             infile >> weight;
 //            std::cout << "Weight: " << weight << std::endl;
-//            if (weight > 0) {
             vertex_edges[i][j] = weight;
-//            if (weight >= 80 && weight <= 120) {
-////                edges_count++;
-////                edges[edges_count].a_vertex = i;
-////                edges[edges_count].b_vertex = j;
-//                vertex_edges[i][j] = weight;
-//                std::cout << "orig: " << i << ", dest: " << j << std::endl;
 //            }
         }
     }
@@ -275,23 +256,33 @@ int main(int argc, char *argv[]) {
             }
         }
     }
-//    std::vector<Edge> edges_vec(&edges, &edges);
 
-    // TODO OPTIONAL sort edges by weights
-
-    // TODO other stuff
-
-    // TODO check if bipartite first
-
-    // TODO other stuff
-//    std::sort(&edges, &edges + sizeof(Edge)/sizeof(Edge[0]));
+    // sort edges by weight
     std::sort(std::rbegin(edges), std::rend(edges));
     rec_func(0, 0, 0);
 
-    std::cout << "MAX WEIGHT: " << current_max_weight_found << " in REC calls " << ref_func_call_counter << std::endl;
+    std::cout << "{" << std::endl;
+//    std::cout << "MAX WEIGHT: " << current_max_weight_found << " in REC calls " << ref_func_call_counter << std::endl;
+    std::cout << "\"MAX_WEIGHT\": " << current_max_weight_found << ", " << std::endl;
+    std::cout << "\"REC_CALLS\": " << ref_func_call_counter << ", " << std::endl;
 //
+    std::cout << "\"RESULT\": " << "[" << std::endl;
     for (int i = 0; i < vertex_count; i++) {
-        std::cout << "ID: " << i << " COLOR: " << int(vertex_colors_best_solution[i]) << std::endl;
+//        std::cout << "ID: " << i << " COLOR: " << int(vertex_colors_best_solution[i]) << std::endl;
+        std::cout << "{"; // << std::endl;
+        std::cout << "\"ID\": " << i << ", ";// << std::endl;
+        std::cout << "\"COLOR\": " << int(vertex_colors_best_solution[i]); //<< ", ";// << std::endl;
+//        std::cout << "}" << std::endl;
+        if (i+1 == vertex_count) {
+            std::cout << "}" << std::endl;
+        }
+        else {
+            std::cout << "}, " << std::endl;
+        }
     }
-//    std::cout << current_max_weight_found << std::endl;
+    std::cout << "] " << std::endl;
+
+    std::cout << "}" << std::endl;
 }
+
+//  g++ -std=c++17 -Wall -pedantic -Wno-long-long -O2 -o main main.cpp && ./main graphs/graf_15_5.txt  1300
