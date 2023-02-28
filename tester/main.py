@@ -89,24 +89,27 @@ GRAPHS = [
         "rec_calls_num": 160000000,
         "max_weight": 3984,
     },
-    # {
-    #     "path": "graf_15_12.txt",
-    #     "runtime": 103,
-    #     "rec_calls": "21G",
-    #     "max_weight": 5380,
-    # },
-    # {
-    #     "path": "graf_15_14.txt",
-    #     "runtime": 5700,
-    #     "rec_calls": "1.3T",
-    #     "max_weight": 5578,
-    # },
-    # {
-    #     "path": "graf_17_10.txt",
-    #     "runtime": 78,
-    #     "rec_calls": "18G",
-    #     "max_weight": 5415,
-    # },
+    {
+        "path": "graf_15_12.txt",
+        "runtime": 103,
+        "rec_calls": "21G",
+        "rec_calls_num": 21000000000,
+        "max_weight": 5380,
+    },
+    {
+        "path": "graf_15_14.txt",
+        "runtime": 5700,
+        "rec_calls": "1.3T",
+        "rec_calls_num": 1300000000000000,
+        "max_weight": 5578,
+    },
+    {
+        "path": "graf_17_10.txt",
+        "runtime": 78,
+        "rec_calls": "18G",
+        "rec_calls_num": 18000000000000000,
+        "max_weight": 5415,
+    },
 ]
 
 

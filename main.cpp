@@ -114,7 +114,8 @@ void rec_func(uint16_t current_edge, uint64_t current_weight, uint16_t used_edge
 
     // check for
     // >> "Větev ukončíme, i pokud v daném mezistavu zjistíme, že výsledný podgraf nebude souvislý, neboť pro souvislý podgraf musí platit |E|>=|V|-1."
-    if ((used_edges + (edges_count - (current_edge-1))) <= vertex_count-1) {
+//    if ((used_edges + (edges_count - (current_edge-1))) < vertex_count-1) {
+    if ((used_edges + (edges_count - (current_edge))) < vertex_count-1) {
         return;
     }
 
@@ -156,11 +157,24 @@ void rec_func(uint16_t current_edge, uint64_t current_weight, uint16_t used_edge
         vertex_colors[c_edge->b_vertex] = RED;
         c_edge->is_used = true;
         rec_func(current_edge + 1, current_weight + edges[current_edge].weight, used_edges+1);
-        // no color
-        vertex_colors[c_edge->a_vertex] = NO_COLOR;
-        vertex_colors[c_edge->b_vertex] = NO_COLOR;
+//        // no color
+//        vertex_colors[c_edge->a_vertex] = NO_COLOR;
+//        vertex_colors[c_edge->b_vertex] = NO_COLOR;
+//        c_edge->is_used = false;
+//        rec_func(current_edge + 1, current_weight, used_edges);
+        vertex_colors[c_edge->a_vertex] = BLUE;
+        vertex_colors[c_edge->b_vertex] = BLUE;
         c_edge->is_used = false;
         rec_func(current_edge + 1, current_weight, used_edges);
+
+        vertex_colors[c_edge->a_vertex] = RED;
+        vertex_colors[c_edge->b_vertex] = RED;
+        c_edge->is_used = false;
+        rec_func(current_edge + 1, current_weight, used_edges);
+
+
+        vertex_colors[c_edge->a_vertex] = NO_COLOR;
+        vertex_colors[c_edge->b_vertex] = NO_COLOR;
     }
     else if (vertex_colors[c_edge->a_vertex] == vertex_colors[c_edge->b_vertex]) {
         c_edge->is_used = false;
@@ -170,44 +184,52 @@ void rec_func(uint16_t current_edge, uint64_t current_weight, uint16_t used_edge
             (vertex_colors[c_edge->a_vertex] == BLUE  && vertex_colors[c_edge->b_vertex] == RED)) {
         c_edge->is_used = true;
         rec_func(current_edge + 1, current_weight + edges[current_edge].weight, used_edges+1);
-        c_edge->is_used = false;
-        rec_func(current_edge + 1, current_weight, used_edges);
+//        c_edge->is_used = false;
+//        rec_func(current_edge + 1, current_weight, used_edges);
     }
     else if (vertex_colors[c_edge->a_vertex] == NO_COLOR  && vertex_colors[c_edge->b_vertex] == RED) {
         vertex_colors[c_edge->a_vertex] = BLUE;
         c_edge->is_used = true;
         rec_func(current_edge + 1, current_weight + edges[current_edge].weight, used_edges+1);
 
-        vertex_colors[c_edge->a_vertex] = NO_COLOR;
+//        vertex_colors[c_edge->a_vertex] = NO_COLOR;
+        vertex_colors[c_edge->a_vertex] = RED;
         c_edge->is_used = false;
         rec_func(current_edge + 1, current_weight, used_edges);
+        vertex_colors[c_edge->a_vertex] = NO_COLOR;
     }
     else if (vertex_colors[c_edge->a_vertex] == NO_COLOR  && vertex_colors[c_edge->b_vertex] == BLUE) {
         vertex_colors[c_edge->a_vertex] = RED;
         c_edge->is_used = true;
         rec_func(current_edge + 1, current_weight + edges[current_edge].weight, used_edges+1);
 
-        vertex_colors[c_edge->a_vertex] = NO_COLOR;
+//        vertex_colors[c_edge->a_vertex] = NO_COLOR;
+        vertex_colors[c_edge->a_vertex] = BLUE;
         c_edge->is_used = false;
         rec_func(current_edge + 1, current_weight, used_edges);
+        vertex_colors[c_edge->a_vertex] = NO_COLOR;
     }
     else if (vertex_colors[c_edge->a_vertex] == RED  && vertex_colors[c_edge->b_vertex] == NO_COLOR) {
         vertex_colors[c_edge->b_vertex] = BLUE;
         c_edge->is_used = true;
         rec_func(current_edge + 1, current_weight + edges[current_edge].weight, used_edges+1);
 
-        vertex_colors[c_edge->b_vertex] = NO_COLOR;
+//        vertex_colors[c_edge->b_vertex] = NO_COLOR;
+        vertex_colors[c_edge->b_vertex] = RED;
         c_edge->is_used = false;
         rec_func(current_edge + 1, current_weight, used_edges);
+        vertex_colors[c_edge->b_vertex] = NO_COLOR;
     }
     else if (vertex_colors[c_edge->a_vertex] == BLUE  && vertex_colors[c_edge->b_vertex] == NO_COLOR) {
         vertex_colors[c_edge->b_vertex] = RED;
         c_edge->is_used = true;
         rec_func(current_edge + 1, current_weight + edges[current_edge].weight, used_edges+1);
 
-        vertex_colors[c_edge->b_vertex] = NO_COLOR;
+//        vertex_colors[c_edge->b_vertex] = NO_COLOR;
+        vertex_colors[c_edge->b_vertex] = BLUE;
         c_edge->is_used = false;
         rec_func(current_edge + 1, current_weight, used_edges);
+        vertex_colors[c_edge->b_vertex] = NO_COLOR;
     }
 
     return;
