@@ -1,3 +1,5 @@
+#include <algorithm>
+#include <cstring>
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -36,32 +38,16 @@ struct Edge {
 
 uint64_t ref_func_call_counter = 0;
 uint64_t current_max_weight_found = 0;
-uint8_t vertex_colors[50];
-uint8_t vertex_colors_best_solution[50];
-uint8_t vertex_colors_tmp[50];
+uint8_t vertex_colors[50] = {};
+uint8_t vertex_colors_best_solution[50] = {};
+uint8_t vertex_colors_tmp[50] = {};
 int vertex_count;
-int vertex_edges[50][50];
+int vertex_edges[50][50] = {};
 uint16_t edges_count = 0;
-Edge edges[300];
+Edge edges[300] = {};
 
 
 
-
-
-
-//class GraphState {
-//    // edges 300
-//    bool uses_edges[300];
-//    // vertex 50
-//    uint8_t vertex_colors[50];
-////    uint8_t last_picked_edge = 0;
-//
-//public:
-////    uint8_t pick_unassigned_edge() {
-////        return uses_edges[++last_picked_edge];
-////    }
-//
-//};
 
 uint64_t calc_sum_of_rest_of_weights(uint16_t current_edge) {
     uint64_t sum = 0;
@@ -307,4 +293,4 @@ int main(int argc, char *argv[]) {
     std::cout << "}" << std::endl;
 }
 
-//  g++ -std=c++17 -Wall -pedantic -Wno-long-long -O2 -o main main.cpp && ./main graphs/graf_15_5.txt  1300
+//  g++ -std=c++17 -Wall -pedantic -Wno-long-long -O2 -o main main.cpp && ./main graphs/graf_15_5.txt  1
