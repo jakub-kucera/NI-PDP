@@ -1,4 +1,3 @@
-# This is a sample Python script.
 import json
 import os
 from datetime import datetime
@@ -134,9 +133,5 @@ def main():
         print(f"Runtime: {end - start}")
 
 
-
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     main()
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
