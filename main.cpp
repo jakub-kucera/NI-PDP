@@ -15,7 +15,7 @@ struct Edge {
     uint8_t a_vertex = UINT8_MAX;
     uint8_t b_vertex = UINT8_MAX;
     uint8_t weight;
-    bool is_used = false;
+//    bool is_used = false;
 
     // generated comparators by Clion
     bool operator<(const Edge &rhs) const {
@@ -38,7 +38,7 @@ struct Edge {
 
 uint64_t ref_func_call_counter = 0;
 uint64_t current_max_weight_found = 0;
-uint8_t vertex_colors[50] = {};
+//uint8_t vertex_colors[50] = {};
 uint8_t vertex_colors_best_solution[50] = {};
 uint8_t vertex_colors_tmp[50] = {};
 int vertex_count;
@@ -46,6 +46,53 @@ int vertex_edges[50][50] = {};
 uint16_t edges_count = 0;
 Edge edges[300] = {};
 
+struct State {
+//    uint64_t ref_func_call_counter = 0;
+    // vertex colors
+    uint8_t v_clrs[50] = {};
+//    uint8_t vertex_colors_tmp[50] = {};
+    // are edges used
+    bool b_edges[300] = {};
+
+    // current edge index
+//    uint16_t c_edge = 0;
+    uint16_t c_edge = -1;
+    // number of used edges
+    uint16_t used_edges = 0;
+    // current max weight
+    uint64_t weight = 0;
+
+    void add_c_edge() {
+        b_edges[c_edge] = true;
+        weight += edges[c_edge].weight;
+        used_edges++;
+    }
+
+    State get_next_state() {
+        State new_state = *this;
+//        std::copy(std::begin(a), std::end(a), std::begin(b));
+//        new_state.c_edge++;
+        return new_state;
+    }
+
+    uint8_t a_clr() {
+        return v_clrs[edges[c_edge].a_vertex];
+    }
+
+    uint8_t b_clr() {
+        return v_clrs[edges[c_edge].b_vertex];
+    }
+
+    void do_clr_a(uint8_t clr) {
+        v_clrs[edges[c_edge].a_vertex] = clr;
+    };
+    void do_clr_b(uint8_t clr) {
+        v_clrs[edges[c_edge].b_vertex] = clr;
+    };
+};
+
+uint16_t queue_length = 0;
+State state_queue[300] = {};
 
 
 
@@ -95,24 +142,32 @@ bool check_consistency() {
 
 //GraphState graph = GraphState();
 
-void rec_func(uint16_t current_edge, uint64_t current_weight, uint16_t used_edges) {
+//void rec_func(State && st) {
+void rec_func(State & st) {
+    st.c_edge++;
     ref_func_call_counter++;
 
     // check for
     // >> "Větev ukončíme, i pokud v daném mezistavu zjistíme, že výsledný podgraf nebude souvislý, neboť pro souvislý podgraf musí platit |E|>=|V|-1."
 //    if ((used_edges + (edges_count - (current_edge-1))) < vertex_count-1) {
-    if ((used_edges + (edges_count - (current_edge))) < vertex_count-1) {
+    if ((st.used_edges + (edges_count - (st.c_edge))) < vertex_count-1) {
         return;
     }
 
 
-    if (current_edge == edges_count) {
-        if (current_weight > current_max_weight_found) {
+    if (st.c_edge == edges_count) {
+        if (st.weight > current_max_weight_found) {
             // TODO check if graph is 'souvisly'
             if (check_consistency()) {
 //                std::cout << "CONSISTENT" << std::endl;
-                current_max_weight_found = current_weight;
-                memcpy( vertex_colors_best_solution, vertex_colors, sizeof(vertex_colors_best_solution) );
+                #pragma omp critical // update_best_weight
+                {
+                    // check if this is still the best weight (could have been changed when checking consistency)
+                    if (st.weight > current_max_weight_found){
+                        current_max_weight_found = st.weight;
+                        memcpy( vertex_colors_best_solution, st.v_clrs, sizeof(vertex_colors_best_solution) );
+                    }
+                }
 //            std::cout << "NEW MAX WEIGHT: " << current_max_weight_found << std::endl;
                 return;  // return smth else?
             }
@@ -123,102 +178,120 @@ void rec_func(uint16_t current_edge, uint64_t current_weight, uint16_t used_edge
         return;
     }
 
-    Edge *c_edge = &(edges[current_edge]);
+//    Edge *c_edge = &(edges[current_edge]);
 
     if (current_max_weight_found > 0) {
-        if ((current_weight + calc_sum_of_rest_of_weights(current_edge)) < current_max_weight_found) {
+        if ((st.weight + calc_sum_of_rest_of_weights(st.c_edge)) < current_max_weight_found) {
             return;
         }
     }
 
+    // colors of both adjacent vertices
+    uint8_t a_clr = st.a_clr();
+    uint8_t b_clr = st.b_clr();
+
     // check vertexes - 1 already colored, both colored (same, different)
-    if (vertex_colors[c_edge->a_vertex] == NO_COLOR  && vertex_colors[c_edge->b_vertex] == NO_COLOR) {
+    if (a_clr == NO_COLOR  && b_clr == NO_COLOR) {
         // color RED - BLUE
-        vertex_colors[c_edge->a_vertex] = RED;
-        vertex_colors[c_edge->b_vertex] = BLUE;
-        c_edge->is_used = true;
-        rec_func(current_edge + 1, current_weight + edges[current_edge].weight, used_edges+1);
+        State new_st = st.get_next_state();
+        new_st.do_clr_a(RED);
+        new_st.do_clr_b(BLUE);
+        new_st.add_c_edge();
+        #pragma omp task
+        rec_func(new_st);
+
         // color BLUE - RED
-        vertex_colors[c_edge->a_vertex] = BLUE;
-        vertex_colors[c_edge->b_vertex] = RED;
-        c_edge->is_used = true;
-        rec_func(current_edge + 1, current_weight + edges[current_edge].weight, used_edges+1);
+        new_st = st.get_next_state();
+        new_st.do_clr_a(BLUE);
+        new_st.do_clr_b(RED);
+        new_st.add_c_edge();
+        #pragma omp task
+        rec_func(new_st);
+
+
 //        // no color
-//        vertex_colors[c_edge->a_vertex] = NO_COLOR;
-//        vertex_colors[c_edge->b_vertex] = NO_COLOR;
-//        c_edge->is_used = false;
-//        rec_func(current_edge + 1, current_weight, used_edges);
-        vertex_colors[c_edge->a_vertex] = BLUE;
-        vertex_colors[c_edge->b_vertex] = BLUE;
-        c_edge->is_used = false;
-        rec_func(current_edge + 1, current_weight, used_edges);
+//        new_st = st.get_next_state();
+//        rec_func(new_st);
 
-        vertex_colors[c_edge->a_vertex] = RED;
-        vertex_colors[c_edge->b_vertex] = RED;
-        c_edge->is_used = false;
-        rec_func(current_edge + 1, current_weight, used_edges);
+        new_st = st.get_next_state();
+        new_st.do_clr_a(BLUE);
+        new_st.do_clr_b(BLUE);
+        #pragma omp task
+        rec_func(new_st);
 
-
-        vertex_colors[c_edge->a_vertex] = NO_COLOR;
-        vertex_colors[c_edge->b_vertex] = NO_COLOR;
+        new_st = st.get_next_state();
+        new_st.do_clr_a(RED);
+        new_st.do_clr_b(RED);
+        #pragma omp task
+        rec_func(new_st);
     }
-    else if (vertex_colors[c_edge->a_vertex] == vertex_colors[c_edge->b_vertex]) {
-        c_edge->is_used = false;
-        rec_func(current_edge + 1, current_weight, used_edges);
+    else if (a_clr == b_clr) {
+        State new_st = st.get_next_state();
+        rec_func(new_st);
     }
-    else if ((vertex_colors[c_edge->a_vertex] == RED  && vertex_colors[c_edge->b_vertex] == BLUE) or
-            (vertex_colors[c_edge->a_vertex] == BLUE  && vertex_colors[c_edge->b_vertex] == RED)) {
-        c_edge->is_used = true;
-        rec_func(current_edge + 1, current_weight + edges[current_edge].weight, used_edges+1);
-//        c_edge->is_used = false;
-//        rec_func(current_edge + 1, current_weight, used_edges);
-    }
-    else if (vertex_colors[c_edge->a_vertex] == NO_COLOR  && vertex_colors[c_edge->b_vertex] == RED) {
-        vertex_colors[c_edge->a_vertex] = BLUE;
-        c_edge->is_used = true;
-        rec_func(current_edge + 1, current_weight + edges[current_edge].weight, used_edges+1);
+    else if ((a_clr == RED  && b_clr == BLUE) or
+            (a_clr == BLUE  && b_clr == RED)) {
 
-//        vertex_colors[c_edge->a_vertex] = NO_COLOR;
-        vertex_colors[c_edge->a_vertex] = RED;
-        c_edge->is_used = false;
-        rec_func(current_edge + 1, current_weight, used_edges);
-        vertex_colors[c_edge->a_vertex] = NO_COLOR;
-    }
-    else if (vertex_colors[c_edge->a_vertex] == NO_COLOR  && vertex_colors[c_edge->b_vertex] == BLUE) {
-        vertex_colors[c_edge->a_vertex] = RED;
-        c_edge->is_used = true;
-        rec_func(current_edge + 1, current_weight + edges[current_edge].weight, used_edges+1);
+        State new_st = st.get_next_state();
+        new_st.add_c_edge();
+        #pragma omp task
+        rec_func(new_st);
 
-//        vertex_colors[c_edge->a_vertex] = NO_COLOR;
-        vertex_colors[c_edge->a_vertex] = BLUE;
-        c_edge->is_used = false;
-        rec_func(current_edge + 1, current_weight, used_edges);
-        vertex_colors[c_edge->a_vertex] = NO_COLOR;
+//        new_st = st.get_next_state();
+//        rec_func(new_st);
     }
-    else if (vertex_colors[c_edge->a_vertex] == RED  && vertex_colors[c_edge->b_vertex] == NO_COLOR) {
-        vertex_colors[c_edge->b_vertex] = BLUE;
-        c_edge->is_used = true;
-        rec_func(current_edge + 1, current_weight + edges[current_edge].weight, used_edges+1);
+    else if (a_clr == NO_COLOR  && b_clr == RED) {
 
-//        vertex_colors[c_edge->b_vertex] = NO_COLOR;
-        vertex_colors[c_edge->b_vertex] = RED;
-        c_edge->is_used = false;
-        rec_func(current_edge + 1, current_weight, used_edges);
-        vertex_colors[c_edge->b_vertex] = NO_COLOR;
+        State new_st = st.get_next_state();
+        new_st.do_clr_a(BLUE);
+        new_st.add_c_edge();
+        #pragma omp task
+        rec_func(new_st);
+
+        new_st = st.get_next_state();
+        new_st.do_clr_a(RED);
+        #pragma omp task
+        rec_func(new_st);
     }
-    else if (vertex_colors[c_edge->a_vertex] == BLUE  && vertex_colors[c_edge->b_vertex] == NO_COLOR) {
-        vertex_colors[c_edge->b_vertex] = RED;
-        c_edge->is_used = true;
-        rec_func(current_edge + 1, current_weight + edges[current_edge].weight, used_edges+1);
+    else if (a_clr == NO_COLOR  && b_clr == BLUE) {
 
-//        vertex_colors[c_edge->b_vertex] = NO_COLOR;
-        vertex_colors[c_edge->b_vertex] = BLUE;
-        c_edge->is_used = false;
-        rec_func(current_edge + 1, current_weight, used_edges);
-        vertex_colors[c_edge->b_vertex] = NO_COLOR;
+        State new_st = st.get_next_state();
+        new_st.do_clr_a(RED);
+        new_st.add_c_edge();
+        #pragma omp task
+        rec_func(new_st);
+
+
+        new_st = st.get_next_state();
+        new_st.do_clr_a(BLUE);
+        #pragma omp task
+        rec_func(new_st);
     }
+    else if (a_clr == RED  && b_clr == NO_COLOR) {
+        State new_st = st.get_next_state();
+        new_st.do_clr_b(BLUE);
+        new_st.add_c_edge();
+        #pragma omp task
+        rec_func(new_st);
 
-    return;
+
+        new_st = st.get_next_state();
+        new_st.do_clr_b(RED);
+        #pragma omp task
+        rec_func(new_st);
+    }
+    else if (a_clr == BLUE  && b_clr == NO_COLOR) {
+        State new_st = st.get_next_state();
+        new_st.do_clr_b(RED);
+        new_st.add_c_edge();
+        #pragma omp task
+        rec_func(new_st);
+
+        new_st = st.get_next_state();
+        new_st.do_clr_b(BLUE);
+        #pragma omp task
+        rec_func(new_st);
+    }
 }
 
 
@@ -267,7 +340,15 @@ int main(int argc, char *argv[]) {
 
     // sort edges by weight
     std::sort(std::rbegin(edges), std::rend(edges));
-    rec_func(0, 0, 0);
+
+    State init_state;
+
+    #pragma omp parallel
+    {
+        #pragma omp single
+        rec_func(init_state);
+
+    }
 
     std::cout << "{" << std::endl;
 //    std::cout << "MAX WEIGHT: " << current_max_weight_found << " in REC calls " << ref_func_call_counter << std::endl;
@@ -294,3 +375,5 @@ int main(int argc, char *argv[]) {
 }
 
 //  g++ -std=c++17 -Wall -pedantic -Wno-long-long -O2 -o main main.cpp && ./main graphs/graf_15_5.txt  1
+
+// g++ -std=c++17  -Wall -pedantic -Wno-long-long -O2 -o ../main_seq ../main.cpp  && g++ -std=c++17 -fopenmp  -Wall -pedantic -Wno-long-long -O2 -o ../main_openmp ../main.cpp && python3 main.py
