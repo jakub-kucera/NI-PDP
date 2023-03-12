@@ -2,7 +2,21 @@ import json
 import os
 from datetime import datetime
 
-PROGRAM_FILE_PATH = "../main"
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+
+SEQ_PROGRAM_FILE_PATH = "../main_seq"
+OPEN_MP_PROGRAM_FILE_PATH = "../main_openmp"
+
 GRAPHS = [
     {
         "path": "graf_10_3.txt",
@@ -113,24 +127,55 @@ GRAPHS = [
 
 
 def main():
+    print(300 * "#")
     for testcase in GRAPHS:
         print(50*"=")
         print(f"RUNNING {testcase['path']},")
         # print(testcase)
         graph_path = f"../graphs/{testcase['path']}"
 
-        start = datetime.now()
-        stream_project = os.popen(f"{PROGRAM_FILE_PATH} {graph_path} 0")# {sdaf}")
-        output = stream_project.read()
-        # print(output)
-        output_dict = json.loads(output)
-        end = datetime.now()
-        weight_match_str = "MATCH" if output_dict['MAX_WEIGHT'] == testcase['max_weight'] else "NOT MATCH"
-        rec_calls_less_str = "LESS" if output_dict['REC_CALLS'] < testcase['rec_calls_num'] else "MORE (or =)"
-        print(f"max weight {weight_match_str}, ref: {testcase['max_weight']}, result: {output_dict['MAX_WEIGHT']}")
-        print(f"rec calls {rec_calls_less_str}, ref: {testcase['rec_calls_num']}, result: {output_dict['REC_CALLS']}")
+        # start = datetime.now()
+        # stream_project = os.popen(f"{SEQ_PROGRAM_FILE_PATH} {graph_path} 0")  # {sdaf}")
+        # output = stream_project.read()
+        # # print(output)
+        # output_dict = json.loads(output)
+        # end = datetime.now()
+        # # weight_match_str = "MATCH" if output_dict['MAX_WEIGHT'] == testcase['max_weight'] else "NOT MATCH"
+        # # rec_calls_less_str = "LESS" if output_dict['REC_CALLS'] < testcase['rec_calls_num'] else "MORE (or =)"
+        # # print(f"max weight {weight_match_str}, ref: {testcase['max_weight']}, result: {output_dict['MAX_WEIGHT']}")
+        # # print(f"rec calls {rec_calls_less_str}, ref: {testcase['rec_calls_num']}, result: {output_dict['REC_CALLS']}")
+        # weight_match_str = f"{bcolors.OKGREEN}MATCH{bcolors.ENDC}     " if output_dict['MAX_WEIGHT'] == testcase['max_weight'] else f"{bcolors.FAIL}NOT MATCH{bcolors.ENDC} "
+        # print(f"max weight {weight_match_str}, REF: {testcase['max_weight']}, SEQ: {output_dict['MAX_WEIGHT']}")
+        # rec_calls_less_str = f"{bcolors.OKGREEN}LESS{bcolors.ENDC}       " if output_dict['REC_CALLS'] < testcase['rec_calls_num'] else f"{bcolors.FAIL}MORE (or =){bcolors.ENDC}"
+        # print(f"rec calls {rec_calls_less_str}, REF: {testcase['rec_calls_num']}, SEQ: {output_dict['REC_CALLS']}")
+        # print(f"Runtime {end-start}")
+
+
+
+        # sequential
+        seq_start = datetime.now()
+        seq_stream_project = os.popen(f"{SEQ_PROGRAM_FILE_PATH} {graph_path} 1")
+        seq_output = seq_stream_project.read()
+        seq_output_dict = json.loads(seq_output)
+        seq_end = datetime.now()
+        seq_runtime = (seq_end - seq_start)
+
+        # openMP
+        open_mp_start = datetime.now()
+        open_mp_stream_project = os.popen(f"{OPEN_MP_PROGRAM_FILE_PATH} {graph_path} 4")
+        open_mp_output = open_mp_stream_project.read()
+        open_mp_output_dict = json.loads(open_mp_output)
+        open_mp_end = datetime.now()
+        open_mp_runtime = (open_mp_end - open_mp_start) # .total_seconds()
+
+        weight_match_str = f"{bcolors.OKGREEN}MATCH{bcolors.ENDC}     " if open_mp_output_dict['MAX_WEIGHT'] == seq_output_dict['MAX_WEIGHT'] == testcase['max_weight'] else f"{bcolors.FAIL}NOT MATCH{bcolors.ENDC} "
+        print(f"max weight {weight_match_str}, REF: {testcase['max_weight']}, SEQ: {seq_output_dict['MAX_WEIGHT']}, OMP: {open_mp_output_dict['MAX_WEIGHT']}")
+
+        rec_calls_less_str = f"{bcolors.OKGREEN}LESS{bcolors.ENDC}       " if seq_output_dict['REC_CALLS'] < testcase['rec_calls_num'] else f"{bcolors.FAIL}MORE (or =){bcolors.ENDC}"
+        print(f"rec calls {rec_calls_less_str}, REF: {testcase['rec_calls_num']}, SEQ: {seq_output_dict['REC_CALLS']}, OMP: {open_mp_output_dict['REC_CALLS']}")
         # print(f"REC CALL, REF: {testcase['max_weight']}, RESULT: {output_dict['REC_CALLS']}")
-        print(f"Runtime: {end - start}")
+        runtime_str = f"{bcolors.FAIL}SEQ LESS{bcolors.ENDC}     " if seq_runtime < open_mp_runtime else f"{bcolors.OKGREEN}SEQ MORE{bcolors.ENDC}     "
+        print(f"Runtime {runtime_str}, SEQ: {seq_runtime}, OMP: {open_mp_runtime}")
 
 
 if __name__ == '__main__':
