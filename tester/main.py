@@ -15,7 +15,9 @@ class bcolors:
 
 
 SEQ_PROGRAM_FILE_PATH = "../main_seq"
-OPEN_MP_PROGRAM_FILE_PATH = "../main_openmp"
+# OPEN_MP_PROGRAM_FILE_PATH = "../main_openmp"
+OPEN_MP_PROGRAM_FILE_PATH = "../main_mpi"
+# OPEN_MPI_PROGRAM_FILE_PATH = "../main_mpi"
 
 GRAPHS = [
     {
@@ -162,7 +164,8 @@ def main():
 
         # openMP
         open_mp_start = datetime.now()
-        open_mp_stream_project = os.popen(f"{OPEN_MP_PROGRAM_FILE_PATH} {graph_path} 4")
+        open_mp_stream_project = os.popen(f" mpirun --allow-run-as-root  -np 6 {OPEN_MP_PROGRAM_FILE_PATH} {graph_path} 4")
+        # open_mp_stream_project = os.popen(f"{OPEN_MP_PROGRAM_FILE_PATH} {graph_path} 4")
         open_mp_output = open_mp_stream_project.read()
         open_mp_output_dict = json.loads(open_mp_output)
         open_mp_end = datetime.now()
