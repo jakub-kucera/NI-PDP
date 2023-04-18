@@ -8,14 +8,19 @@
     #include </opt/homebrew/Cellar/open-mpi/4.1.5/include/mpi.h>
 #else
     #include <mpi.h>
+    #include <omp.h>
 #endif
 
 using namespace std;
 
+#define LOG_FILE_PATH "./log.txt"
+
 //#define USE_SUPER_OPTIMIZATION true
 #define USE_SUPER_OPTIMIZATION false
-#define MPI_MAX_QUEUE_SIZE 16 // TODO chane into multiplier
-#define MP_MAX_QUEUE_SIZE 100
+//#define MPI_MAX_QUEUE_SIZE 16
+#define MPI_MAX_QUEUE_SIZE_MULT 6
+//#define MP_MAX_QUEUE_SIZE 100
+#define MP_MAX_QUEUE_SIZE_MULT 10
 //#define QUEUE_SIZE_PER_THREAD 1000
 
 // MPI tags
@@ -388,10 +393,11 @@ void rec_func(State & st) {
 
 
 //void create_init_tasks_mpi(MPI_Datatype & MPI_STATE, int num_procs) {  // TODO try
-void create_init_tasks_mpi(MPI_Datatype MPI_STATE, MPI_Datatype MPI_BEST_SOLUTION, int num_procs) {
+void create_init_tasks_mpi(MPI_Datatype MPI_STATE, MPI_Datatype MPI_BEST_SOLUTION, int num_procs, ofstream & myfile) {
     std::queue<State> queue;
     queue.emplace();
-    while(queue.size() < MPI_MAX_QUEUE_SIZE) {
+//    while(queue.size() < MPI_MAX_QUEUE_SIZE) {
+    while(queue.size() < MPI_MAX_QUEUE_SIZE_MULT * num_procs) {
         State c_st = queue.front();
         queue.pop();
 
@@ -403,7 +409,7 @@ void create_init_tasks_mpi(MPI_Datatype MPI_STATE, MPI_Datatype MPI_BEST_SOLUTIO
         }
     }
 
-    State items[MPI_MAX_QUEUE_SIZE+5];
+    State items[MPI_MAX_QUEUE_SIZE_MULT*num_procs +5];
 
     int items_size = 0;
     while(!queue.empty()) {
@@ -419,8 +425,9 @@ void create_init_tasks_mpi(MPI_Datatype MPI_STATE, MPI_Datatype MPI_BEST_SOLUTIO
 
     // inspired by https://courses.fit.cvut.cz/NI-PDP/media/lectures/NI-PDP-Prednaska06-MPIIntro.pdf
     for (int dest = 1; dest < num_procs; dest++) {  //send the work to Ss
-
-        MPI_Send(&items[queue_idx++], 1, MPI_STATE, dest, TAG_WORK, MPI_COMM_WORLD);
+        myfile << "MASTER: SENDING task to SLAVE #" << dest << endl;
+        MPI_Ssend(&items[queue_idx++], 1, MPI_STATE, dest, TAG_WORK, MPI_COMM_WORLD);
+//        MPI_Send(&items[queue_idx++], 1, MPI_STATE, dest, TAG_WORK, MPI_COMM_WORLD);
 //        MPI_Send(&items[queue_idx], ...(1?), MPI_STATE, dest, TAG_WORK, MPI_COMM_WORLD);
     }
     int working_slaves = num_procs - 1; // the # of working Ss
@@ -430,17 +437,25 @@ void create_init_tasks_mpi(MPI_Datatype MPI_STATE, MPI_Datatype MPI_BEST_SOLUTIO
         BestSolution local_solution;
         MPI_Recv(&local_solution, 1, MPI_BEST_SOLUTION, MPI_ANY_SOURCE, TAG_DONE, MPI_COMM_WORLD, &status);
         if (local_solution > current_best_solution) {
+            myfile << "MASTER: RECEIVED finished task from SLAVE #" << status.MPI_SOURCE << " with current BEST SOLUTION" << endl;
             current_best_solution = local_solution;
             current_best_solution.weight = local_solution.weight;
+        }
+        else {
+            myfile << "MASTER: RECEIVED finished task from SLAVE #" << status.MPI_SOURCE << " with worse solution" << endl;
         }
 //        MPI_Recv(0, 0, 0, MPI_ANY_SOURCE, TAG_DONE, MPI_COMM_WORLD, &status);
         // TODO
 //        MPI_Recv(best_solution, 0, MPI_SOLUTION, MPI_ANY_SOURCE, TAG_DONE, MPI_COMM_WORLD, &status);
         if (queue_idx < items_size) {
-            MPI_Send(&items[queue_idx++], 1, MPI_STATE, status.MPI_SOURCE, TAG_WORK, MPI_COMM_WORLD);
+            myfile << "MASTER: SENDING another task to SLAVE #" << status.MPI_SOURCE << endl;
+            MPI_Ssend(&items[queue_idx++], 1, MPI_STATE, status.MPI_SOURCE, TAG_WORK, MPI_COMM_WORLD);
+//            MPI_Send(&items[queue_idx++], 1, MPI_STATE, status.MPI_SOURCE, TAG_WORK, MPI_COMM_WORLD);
         }
         else {
-            MPI_Send(nullptr, 0, MPI_STATE, status.MPI_SOURCE, TAG_TERMINATE, MPI_COMM_WORLD);
+            myfile << "MASTER: SENDING TERMINATE signal to SLAVE #" << status.MPI_SOURCE << endl;
+            MPI_Ssend(nullptr, 0, MPI_STATE, status.MPI_SOURCE, TAG_TERMINATE, MPI_COMM_WORLD);
+//            MPI_Send(nullptr, 0, MPI_STATE, status.MPI_SOURCE, TAG_TERMINATE, MPI_COMM_WORLD);
 //            MPI_Send(nullptr, 0, nullptr, status.MPI_SOURCE, TAG_TERMINATE, MPI_COMM_WORLD);
 //            MPI_Send(..., status.MPI_SOURCE, TAG_TERMINATE, MPI_COMM_WORLD);
             working_slaves--;
@@ -453,7 +468,7 @@ void create_init_tasks_mpi(MPI_Datatype MPI_STATE, MPI_Datatype MPI_BEST_SOLUTIO
 void create_init_tasks_mp(State state, int num_of_threads) {
     std::queue<State> queue;
     queue.push(state);
-    while(queue.size() < MP_MAX_QUEUE_SIZE) {
+    while(queue.size() < MP_MAX_QUEUE_SIZE_MULT * num_of_threads) {
         State c_st = queue.front();
         queue.pop();
 
@@ -465,7 +480,7 @@ void create_init_tasks_mp(State state, int num_of_threads) {
         }
     }
 
-    State items[MP_MAX_QUEUE_SIZE+5];
+    State items[MP_MAX_QUEUE_SIZE_MULT * num_of_threads + 5];
 
     int items_size = 0;
     while(!queue.empty()) {
@@ -531,6 +546,12 @@ int main(int argc, char *argv[]) {
 //    MPI_Init(&argc, &argv);
 //    int proc_num, num_procs;
 
+//    double start_time = omp_get_wtime();
+
+    ofstream myfile;
+    myfile.open(LOG_FILE_PATH, ios::out | ios::app);
+
+
     MPI_Comm_rank(MPI_COMM_WORLD, &proc_num);
     MPI_Comm_size(MPI_COMM_WORLD, &num_procs);  // TODO split queue into this many parts
 
@@ -564,13 +585,23 @@ int main(int argc, char *argv[]) {
 
 
     if (proc_num == 0) {
+
+        double start_time = omp_get_wtime();
         // find solution
+        myfile << "MASTER: before sending tasks" << endl;
 //        std::cout << "from MASTER before init tasks" << std::endl;
-        create_init_tasks_mpi(MPI_STATE, MPI_BEST_SOLUTION, num_procs);
+        create_init_tasks_mpi(MPI_STATE, MPI_BEST_SOLUTION, num_procs, myfile);
+
+        double time = omp_get_wtime() - start_time;
 
         std::cout << "{\n";
         std::cout << "\"MAX_WEIGHT\": " << current_best_solution.weight << ", \n";
         std::cout << "\"REC_CALLS\": " << ref_func_call_counter << ", \n";
+        std::cout << "\"VERSION\": " << "\"OPEN_MPI\"" << ", \n";
+        std::cout << "\"PROCESS_COUNT\": " << num_procs << ", \n";
+        std::cout << "\"THREAD_COUNT\": " << core_count << ", \n";
+        std::cout << "\"FILE\": \"" << filepath << "\", \n";
+        std::cout << "\"RUNTIME\": " << time << ", \n";
 
         std::cout << "\"RESULT\": " << "[\n";
         for (int i = 0; i < vertex_count; i++) {
@@ -584,6 +615,7 @@ int main(int argc, char *argv[]) {
     }
     else {
 //        std::cout << "from SLAVE before init tasks" << std::endl;
+        myfile << "SLAVE #" << proc_num << ": before receiving tasks" << endl;
         while (true) {
             //receive a message - work assignment or termination
             MPI_Status status;
@@ -593,22 +625,28 @@ int main(int argc, char *argv[]) {
             MPI_Recv(&message, 1, MPI_STATE, 0, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
 //            std::cout << "from SLAVE after receive" << std::endl;
             if (status.MPI_TAG == TAG_TERMINATE) {
+                myfile << "SLAVE #" << proc_num << ": RECEIVED message with tag TAG_TERMINATE" << endl;
                 // TODO
 //                MPI_Reduce (result,...); //reduce local results to Master
 //                cout << "SLAVE terminating" << endl;
                 break;
             }
             else if (status.MPI_TAG == TAG_WORK) {
+                myfile << "SLAVE #" << proc_num << ": RECEIVED message with tag TAG_WORK" << endl;
 //                [C,i] = message;
 //                cout << "SLAVE received task" << endl;
                 create_init_tasks_mp(message, core_count);
 //                create_init_tasks_mp(MPI_STATE, message);
 //                cout << "SLAVE finished 1 task" << endl;
                 // TODO send state with best solution. Or just send the best solution
-                MPI_Send(&current_best_solution, 1, MPI_BEST_SOLUTION, 0, TAG_DONE, MPI_COMM_WORLD); //report completion to}
+                myfile << "SLAVE #" << proc_num << ": SENDING message with tag TAG_DONE" << endl;
+                MPI_Ssend(&current_best_solution, 1, MPI_BEST_SOLUTION, 0, TAG_DONE, MPI_COMM_WORLD); //report completion to}
+//                MPI_Send(&current_best_solution, 1, MPI_BEST_SOLUTION, 0, TAG_DONE, MPI_COMM_WORLD); //report completion to}
             }
         }
     }
+
+    myfile.close();
     MPI_Finalize();
 
 //    std::cout << "{\n";
@@ -639,3 +677,6 @@ int main(int argc, char *argv[]) {
 // mpirun --allow-run-as-root  -np 4 ./main_mpi
 // OMPI_CXX=g++ mpic++ -fopenmp -O2 -o ../main_mpi  ../main.cpp  && mpirun --allow-run-as-root  -np 4 ../main_mpi   ../graphs/graf_12_9.txt 1 &&
 // OMPI_CXX=g++ mpic++ -fopenmp -O2 -o ../main_mpi  ../main.cpp  && python3 main.py
+
+// OMPI_CXX=g++ mpic++ -fopenmp -O2 -o ../main_mpi  ../main.cpp
+//  OMP_NUM_THREADS=6  mpirun --allow-run-as-root  -np 4 ../main_mpi  ../graphs/graf_12_9.txt  4
