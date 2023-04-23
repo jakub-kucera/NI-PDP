@@ -4,6 +4,12 @@
 #include <string>
 #include <fstream>
 #include <queue>
+#if __APPLE__
+#include </opt/homebrew/Cellar/open-mpi/4.1.5/include/mpi.h>
+#else
+//    #include <mpi.h>
+    #include <omp.h>
+#endif
 
 using namespace std;
 
@@ -378,12 +384,20 @@ int main(int argc, char *argv[]) {
     // sort edges by weight
     std::sort(std::rbegin(edges), std::rend(edges));
 
+    double start_time = omp_get_wtime();
+
     // find solution
     create_init_tasks();
+
+    double duration = omp_get_wtime() - start_time;
 
     std::cout << "{\n";
     std::cout << "\"MAX_WEIGHT\": " << current_max_weight_found << ", \n";
     std::cout << "\"REC_CALLS\": " << ref_func_call_counter << ", \n";
+    std::cout << "\"VERSION\": " << "\"DATA\"" << ", \n";
+    std::cout << "\"THREAD_COUNT\": " << core_count << ", \n";
+    std::cout << "\"FILE\": \"" << filepath << "\", \n";
+    std::cout << "\"RUNTIME\": " << duration << ", \n";
 
     std::cout << "\"RESULT\": " << "[\n";
     for (int i = 0; i < vertex_count; i++) {
@@ -397,9 +411,7 @@ int main(int argc, char *argv[]) {
 
 }
 
-//  g++ -std=c++17 -Wall -pedantic -Wno-long-long -O2 -o main main.cpp && ./main graphs/graf_15_5.txt  1
-
-// g++ -std=c++17  -Wall -pedantic -Wno-long-long -O2 -o ../main_seq ../main.cpp  && g++ -std=c++17 -fopenmp  -Wall -pedantic -Wno-long-long -O2 -o ../main_openmp ../main.cpp && python3 main.py
-
 // TASK 2
-// g++ -std=c++17  -Wall -pedantic -Wno-long-long -O2 -o ../main_seq ../main_task.cpp  && g++ -std=c++17 -fopenmp  -Wall -pedantic -Wno-long-long -O2 -o ../main_openmp ../main_task.cpp && python3 main.py
+// g++ -std=c++17  -Wall -pedantic -Wno-long-long -O2 -o ../main_task ../main_task.cpp  && g++ -std=c++17 -fopenmp  -Wall -pedantic -Wno-long-long -O2 -o ../main_openmp ../main_openmp.cpp && python3 main.py
+
+// g++ -std=c++17 -fopenmp   -Wall -pedantic -Wno-long-long -O2 -o main_data main_data.cpp && ./main_data graphs/graf_13_9.txt  2

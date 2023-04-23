@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <chrono>
 
 using namespace std;
 
@@ -96,7 +97,7 @@ bool check_consistency() {
 //GraphState graph = GraphState();
 
 void rec_func(uint16_t current_edge, uint64_t current_weight, uint16_t used_edges) {
-    ref_func_call_counter++;
+//    ref_func_call_counter++;
 
     // check for
     // >> "Větev ukončíme, i pokud v daném mezistavu zjistíme, že výsledný podgraf nebude souvislý, neboť pro souvislý podgraf musí platit |E|>=|V|-1."
@@ -266,12 +267,24 @@ int main(int argc, char *argv[]) {
 
     // sort edges by weight
     std::sort(std::rbegin(edges), std::rend(edges));
+
+    auto start = chrono::high_resolution_clock::now();
+
     rec_func(0, 0, 0);
+
+    auto stop = chrono::high_resolution_clock::now();
+//    auto duration = chrono::duration_cast<chrono::seconds>(stop - start);
+    auto duration = chrono::duration_cast<chrono::milliseconds>(stop - start);
+
 
     std::cout << "{" << std::endl;
 //    std::cout << "MAX WEIGHT: " << current_max_weight_found << " in REC calls " << ref_func_call_counter << std::endl;
     std::cout << "\"MAX_WEIGHT\": " << current_max_weight_found << ", " << std::endl;
     std::cout << "\"REC_CALLS\": " << ref_func_call_counter << ", " << std::endl;
+    std::cout << "\"VERSION\": " << "\"SEQUENTIAL\"" << ", \n";
+    std::cout << "\"FILE\": \"" << filepath << "\", \n";
+//    std::cout << "\"RUNTIME\": " << duration.count() << ", \n";
+    std::cout << "\"RUNTIME\": " << duration.count() / 1000.0 << ", \n";
 //
     std::cout << "\"RESULT\": " << "[" << std::endl;
     for (int i = 0; i < vertex_count; i++) {
@@ -292,4 +305,4 @@ int main(int argc, char *argv[]) {
     std::cout << "}" << std::endl;
 }
 
-//  g++ -std=c++17 -Wall -pedantic -Wno-long-long -O2 -o main main.cpp && ./main graphs/graf_15_5.txt  1
+// g++ -std=c++17 -Wall -pedantic -Wno-long-long -O2 -o main_seq main_seq.cpp && ./main_seq graphs/graf_15_5.txt  1
