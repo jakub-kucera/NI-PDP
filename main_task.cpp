@@ -13,7 +13,7 @@
 using namespace std;
 
 //#define USE_SUPER_OPTIMIZATION true
-#define USE_SUPER_OPTIMIZATION false
+#define USE_SUPER_OPTIMIZATION true
 
 #define NO_COLOR 0
 #define RED 1

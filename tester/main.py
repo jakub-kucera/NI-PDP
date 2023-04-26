@@ -21,83 +21,83 @@ OPEN_MP_PROGRAM_FILE_PATH = "../main_mpi"
 # OPEN_MPI_PROGRAM_FILE_PATH = "../main_mpi"
 
 GRAPHS = [
-    # {
-    #     "path": "graf_10_3.txt",
-    #     "runtime": 0.0,
-    #     "rec_calls": "1K",
-    #     "rec_calls_num": 1000,
-    #     "max_weight": 1300,
-    # },
-    # {
-    #     "path": "graf_10_5.txt",
-    #     "runtime": 0.0,
-    #     "rec_calls": "12K",
-    #     "rec_calls_num": 1200,
-    #     "max_weight": 1885,
-    # },
-    # {
-    #     "path": "graf_10_6.txt",
-    #     "runtime": 0.02,
-    #     "rec_calls": "374K",
-    #     "rec_calls_num": 374000,
-    #     "max_weight": 2000,
-    # },
-    # {
-    #     "path": "graf_12_3.txt",
-    #     "runtime": 0.0,
-    #     "rec_calls": "1K",
-    #     "rec_calls_num": 1000,
-    #     "max_weight": 1422,
-    # },
-    # {
-    #     "path": "graf_12_5.txt",
-    #     "runtime": 0.0,
-    #     "rec_calls": "171K",
-    #     "rec_calls_num": 171000,
-    #     "max_weight": 2219,
-    # },
-    # {
-    #     "path": "graf_12_6.txt",
-    #     "runtime": 0.0,
-    #     "rec_calls": "401K",
-    #     "rec_calls_num": 401000,
-    #     "max_weight": 2533,
-    # },
-    # {
-    #     "path": "graf_12_9.txt",
-    #     "runtime": 0.47,
-    #     "rec_calls": "49M",
-    #     "rec_calls_num": 49000000,
-    #     "max_weight": 3437,
-    # },
-    # {
-    #     "path": "graf_13_9.txt",
-    #     "runtime": 0.8,
-    #     "rec_calls": "116M",
-    #     "rec_calls_num": 116000000,
-    #     "max_weight": 3700,
-    # },
-    # {
-    #     "path": "graf_15_4.txt",
-    #     "runtime": 0.0,
-    #     "rec_calls": "502K",
-    #     "rec_calls_num": 502000,
-    #     "max_weight": 2547,
-    # },
-    # {
-    #     "path": "graf_15_5.txt",
-    #     "runtime": 0.03,
-    #     "rec_calls": "1M",
-    #     "rec_calls_num": 1000000,
-    #     "max_weight": 2892,
-    # },
-    # {
-    #     "path": "graf_15_6.txt",
-    #     "runtime": 0.05,
-    #     "rec_calls": "4M",
-    #     "rec_calls_num": 4000000,
-    #     "max_weight": 3353,
-    # },
+    {
+        "path": "graf_10_3.txt",
+        "runtime": 0.0,
+        "rec_calls": "1K",
+        "rec_calls_num": 1000,
+        "max_weight": 1300,
+    },
+    {
+        "path": "graf_10_5.txt",
+        "runtime": 0.0,
+        "rec_calls": "12K",
+        "rec_calls_num": 1200,
+        "max_weight": 1885,
+    },
+    {
+        "path": "graf_10_6.txt",
+        "runtime": 0.02,
+        "rec_calls": "374K",
+        "rec_calls_num": 374000,
+        "max_weight": 2000,
+    },
+    {
+        "path": "graf_12_3.txt",
+        "runtime": 0.0,
+        "rec_calls": "1K",
+        "rec_calls_num": 1000,
+        "max_weight": 1422,
+    },
+    {
+        "path": "graf_12_5.txt",
+        "runtime": 0.0,
+        "rec_calls": "171K",
+        "rec_calls_num": 171000,
+        "max_weight": 2219,
+    },
+    {
+        "path": "graf_12_6.txt",
+        "runtime": 0.0,
+        "rec_calls": "401K",
+        "rec_calls_num": 401000,
+        "max_weight": 2533,
+    },
+    {
+        "path": "graf_12_9.txt",
+        "runtime": 0.47,
+        "rec_calls": "49M",
+        "rec_calls_num": 49000000,
+        "max_weight": 3437,
+    },
+    {
+        "path": "graf_13_9.txt",
+        "runtime": 0.8,
+        "rec_calls": "116M",
+        "rec_calls_num": 116000000,
+        "max_weight": 3700,
+    },
+    {
+        "path": "graf_15_4.txt",
+        "runtime": 0.0,
+        "rec_calls": "502K",
+        "rec_calls_num": 502000,
+        "max_weight": 2547,
+    },
+    {
+        "path": "graf_15_5.txt",
+        "runtime": 0.03,
+        "rec_calls": "1M",
+        "rec_calls_num": 1000000,
+        "max_weight": 2892,
+    },
+    {
+        "path": "graf_15_6.txt",
+        "runtime": 0.05,
+        "rec_calls": "4M",
+        "rec_calls_num": 4000000,
+        "max_weight": 3353,
+    },
     {
         "path": "graf_15_8.txt",
         "runtime": 1.8,
@@ -128,20 +128,192 @@ GRAPHS = [
     },
 ]
 
+GRAPHS_HARD = [
+    # {
+    #     "path": "../graph-hard/graf-20-16.txt",
+    #     "runtime": 8,
+    #     "rec_calls": "1K",
+    #     "rec_calls_num": 111000000,
+    #     "max_weight": 9353,
+    # },
+    # {
+    #     "path": "../graph-hard/graf-20-17.txt",
+    #     "runtime": 9.3,
+    #     "rec_calls": "1K",
+    #     "rec_calls_num": 132000000,
+    #     "max_weight": 9768,
+    # },
+    # {
+    #     "path": "../graph-hard/graf-20-19.txt",
+    #     "runtime": 11.5,
+    #     "rec_calls": "1K",
+    #     "rec_calls_num": 158000000,
+    #     "max_weight": 10288,
+    # },
+    {
+        "path": "../graph-hard/graf-21-15.txt",
+        "runtime": 14.3,
+        "rec_calls": "1K",
+        "rec_calls_num": 197000000,
+        "max_weight": 9570,
+    },
+    # {
+    #     "path": "../graph-hard/graf-22-17.txt",
+    #     "runtime": 39,
+    #     "rec_calls": "1K",
+    #     "rec_calls_num": 517000000,
+    #     "max_weight": 11015,
+    # },
+    {
+        "path": "../graph-hard/graf-23-20.txt",
+        "runtime": 129,
+        "rec_calls": "1K",
+        "rec_calls_num": 0,
+        "max_weight": 12902,
+    },
+    # {
+    #     "path": "../graph-hard/graf-24-23.txt",
+    #     "runtime": 388,
+    #     "rec_calls": "1K",
+    #     "rec_calls_num": 0,
+    #     "max_weight": 14844,
+    # },
+    # {
+    #     "path": "../graph-hard/graf-25-16.txt",
+    #     "runtime": 332,
+    #     "rec_calls": "1K",
+    #     "rec_calls_num": 0,
+    #     "max_weight": 12105,
+    # },
+    {
+        "path": "../graph-hard/graf-25-22.txt",
+        "runtime": 667,
+        "rec_calls": "1K",
+        "rec_calls_num": 0,
+        "max_weight": 15594,
+    },
+    # {
+    #     "path": "../graph-hard/graf-28-24.txt",
+    #     "runtime": 516,
+    #     "rec_calls": "1K",
+    #     "rec_calls_num": 0,
+    #     "max_weight": 18729,
+    # },
+    # {
+    #     "path": "../graph-hard/graf-30-25.txt",
+    #     "runtime": 516,
+    #     "rec_calls": "1K",
+    #     "rec_calls_num": 0,
+    #     "max_weight": 18729,
+    # },
+]
+
+# SEQUENTIAL
+# cat serial_job.sh.o192377
+# 389.867
+# ./graph-hard/graf-25-16.txt
+
+# cat serial_job.sh.o192375
+# 407.231
+# ./graph-hard/graf-24-23.txt
+
+# cat serial_job.sh.o192373
+# ./graph-hard/graf-23-20.tx
+# 161.617
+
+
+#OPENMPI
+# job 192579
+# ./graph-hard/graf-25-16.txt
+# P=3 T=2
+# 125.483
+
+# job 192583
+# ./graph-hard/graf-25-16.txt
+# P=3 T=4
+# 62.764
+
+# job 192585
+# ./graph-hard/graf-25-16.txt
+# P=3 T=8
+# 31.7112
+
+# job 192586
+# ./graph-hard/graf-25-16.txt
+# P=3 T=16
+# 15.9731
+
+# job 192587
+# ./graph-hard/graf-25-16.txt
+# P=3 T=20
+# 12.8709
+
+
+
+# job 194195
+# ./graph-hard/graf-24-23.txt
+# P=3 T=2
+
+
+# job 194196
+# ./graph-hard/graf-24-23.txt
+# P=3 T=4
+
+
+# job 194197
+# ./graph-hard/graf-24-23.txt
+# P=3 T=8
+
+
+# job 194198
+# ./graph-hard/graf-24-23.txt
+# P=3 T=16
+
+
+# job 194199
+# ./graph-hard/graf-24-23.txt
+# P=3 T=20
+
+
+
+# job 194200
+# ./graph-hard/graf-23-20.txt
+# P=3 T=2
+
+
+# job 194201
+# ./graph-hard/graf-23-20.txt
+# P=3 T=4
+
+
+# job 194202
+# ./graph-hard/graf-23-20.txt
+# P=3 T=8
+
+
+# job 194203
+# ./graph-hard/graf-23-20.txt
+# P=3 T=16
+
+
+# job 194204
+# ./graph-hard/graf-23-20.txt
+# P=3 T=20
 
 def main():
     # process_count = 4
     # thread_count = 4
-    MAX_PROCESS_COUNT = 6
+    MAX_PROCESS_COUNT = 4
     MAX_THREAD_COUNT = 12
 
     results = {}
 
 
-    for testcase in GRAPHS:
+    # for testcase in GRAPHS:
+    for testcase in GRAPHS_HARD:
         print(300 * "#")
         print(f"RUNNING {testcase['path']},")
-        for process_count, thread_count in itertools.product(range(2, MAX_PROCESS_COUNT+1), range(1, MAX_THREAD_COUNT+1)):
+        for process_count, thread_count in itertools.product(range(2, MAX_PROCESS_COUNT+1), range(1, MAX_THREAD_COUNT+1, 3)):
             print(50 * "=")
             print(f"Process: {process_count}, Thread: {thread_count}")
             print(f"RUNNING {testcase['path']},")
@@ -179,58 +351,59 @@ def main():
 
 
 
+    #
+    #
+    # print(300 * "#")
+    # # for testcase in GRAPHS:
+    # for testcase in GRAPHS_HARD:
+    #     print(50*"=")
+    #     print(f"RUNNING {testcase['path']},")
+    #     # print(testcase)
+    #     graph_path = f"../graphs/{testcase['path']}"
+    #
+    #     start = datetime.now()
+    #     stream_project = os.popen(f"{SEQ_PROGRAM_FILE_PATH} {graph_path} 0")  # {sdaf}")
+    #     output = stream_project.read()
+    #     # print(output)
+    #     output_dict = json.loads(output)
+    #     end = datetime.now()
+    #     # weight_match_str = "MATCH" if output_dict['MAX_WEIGHT'] == testcase['max_weight'] else "NOT MATCH"
+    #     # rec_calls_less_str = "LESS" if output_dict['REC_CALLS'] < testcase['rec_calls_num'] else "MORE (or =)"
+    #     # print(f"max weight {weight_match_str}, ref: {testcase['max_weight']}, result: {output_dict['MAX_WEIGHT']}")
+    #     # print(f"rec calls {rec_calls_less_str}, ref: {testcase['rec_calls_num']}, result: {output_dict['REC_CALLS']}")
+    #     weight_match_str = f"{bcolors.OKGREEN}MATCH{bcolors.ENDC}     " if output_dict['MAX_WEIGHT'] == testcase['max_weight'] else f"{bcolors.FAIL}NOT MATCH{bcolors.ENDC} "
+    #     print(f"max weight {weight_match_str}, REF: {testcase['max_weight']}, SEQ: {output_dict['MAX_WEIGHT']}")
+    #     rec_calls_less_str = f"{bcolors.OKGREEN}LESS{bcolors.ENDC}       " if output_dict['REC_CALLS'] < testcase['rec_calls_num'] else f"{bcolors.FAIL}MORE (or =){bcolors.ENDC}"
+    #     print(f"rec calls {rec_calls_less_str}, REF: {testcase['rec_calls_num']}, SEQ: {output_dict['REC_CALLS']}")
+    #     print(f"Runtime {end-start}")
+    #
 
 
-    print(300 * "#")
-    for testcase in GRAPHS:
-        print(50*"=")
-        print(f"RUNNING {testcase['path']},")
-        # print(testcase)
-        graph_path = f"../graphs/{testcase['path']}"
-
-        # start = datetime.now()
-        # stream_project = os.popen(f"{SEQ_PROGRAM_FILE_PATH} {graph_path} 0")  # {sdaf}")
-        # output = stream_project.read()
-        # # print(output)
-        # output_dict = json.loads(output)
-        # end = datetime.now()
-        # # weight_match_str = "MATCH" if output_dict['MAX_WEIGHT'] == testcase['max_weight'] else "NOT MATCH"
-        # # rec_calls_less_str = "LESS" if output_dict['REC_CALLS'] < testcase['rec_calls_num'] else "MORE (or =)"
-        # # print(f"max weight {weight_match_str}, ref: {testcase['max_weight']}, result: {output_dict['MAX_WEIGHT']}")
-        # # print(f"rec calls {rec_calls_less_str}, ref: {testcase['rec_calls_num']}, result: {output_dict['REC_CALLS']}")
-        # weight_match_str = f"{bcolors.OKGREEN}MATCH{bcolors.ENDC}     " if output_dict['MAX_WEIGHT'] == testcase['max_weight'] else f"{bcolors.FAIL}NOT MATCH{bcolors.ENDC} "
-        # print(f"max weight {weight_match_str}, REF: {testcase['max_weight']}, SEQ: {output_dict['MAX_WEIGHT']}")
-        # rec_calls_less_str = f"{bcolors.OKGREEN}LESS{bcolors.ENDC}       " if output_dict['REC_CALLS'] < testcase['rec_calls_num'] else f"{bcolors.FAIL}MORE (or =){bcolors.ENDC}"
-        # print(f"rec calls {rec_calls_less_str}, REF: {testcase['rec_calls_num']}, SEQ: {output_dict['REC_CALLS']}")
-        # print(f"Runtime {end-start}")
-
-
-
-        # sequential
-        seq_start = datetime.now()
-        seq_stream_project = os.popen(f"{SEQ_PROGRAM_FILE_PATH} {graph_path} 1")
-        seq_output = seq_stream_project.read()
-        seq_output_dict = json.loads(seq_output)
-        seq_end = datetime.now()
-        seq_runtime = (seq_end - seq_start)
-
-        # openMP
-        open_mp_start = datetime.now()
-        open_mp_stream_project = os.popen(f" mpirun --allow-run-as-root  -np 6 {OPEN_MP_PROGRAM_FILE_PATH} {graph_path} 4")
-        # open_mp_stream_project = os.popen(f"{OPEN_MP_PROGRAM_FILE_PATH} {graph_path} 4")
-        open_mp_output = open_mp_stream_project.read()
-        open_mp_output_dict = json.loads(open_mp_output)
-        open_mp_end = datetime.now()
-        open_mp_runtime = (open_mp_end - open_mp_start) # .total_seconds()
-
-        weight_match_str = f"{bcolors.OKGREEN}MATCH{bcolors.ENDC}     " if open_mp_output_dict['MAX_WEIGHT'] == seq_output_dict['MAX_WEIGHT'] == testcase['max_weight'] else f"{bcolors.FAIL}NOT MATCH{bcolors.ENDC} "
-        print(f"max weight {weight_match_str}, REF: {testcase['max_weight']}, SEQ: {seq_output_dict['MAX_WEIGHT']}, OMP: {open_mp_output_dict['MAX_WEIGHT']}")
-
-        rec_calls_less_str = f"{bcolors.OKGREEN}LESS{bcolors.ENDC}       " if seq_output_dict['REC_CALLS'] < testcase['rec_calls_num'] else f"{bcolors.FAIL}MORE (or =){bcolors.ENDC}"
-        print(f"rec calls {rec_calls_less_str}, REF: {testcase['rec_calls_num']}, SEQ: {seq_output_dict['REC_CALLS']}, OMP: {open_mp_output_dict['REC_CALLS']}")
-        # print(f"REC CALL, REF: {testcase['max_weight']}, RESULT: {output_dict['REC_CALLS']}")
-        runtime_str = f"{bcolors.FAIL}SEQ LESS{bcolors.ENDC}     " if seq_runtime < open_mp_runtime else f"{bcolors.OKGREEN}SEQ MORE{bcolors.ENDC}     "
-        print(f"Runtime {runtime_str}, SEQ: {seq_runtime}, OMP: {open_mp_runtime}")
+        # # sequential
+        # seq_start = datetime.now()
+        # seq_stream_project = os.popen(f"{SEQ_PROGRAM_FILE_PATH} {graph_path} 1")
+        # seq_output = seq_stream_project.read()
+        # seq_output_dict = json.loads(seq_output)
+        # seq_end = datetime.now()
+        # seq_runtime = (seq_end - seq_start)
+        #
+        # # openMP
+        # open_mp_start = datetime.now()
+        # open_mp_stream_project = os.popen(f" mpirun --allow-run-as-root  -np 6 {OPEN_MP_PROGRAM_FILE_PATH} {graph_path} 4")
+        # # open_mp_stream_project = os.popen(f"{OPEN_MP_PROGRAM_FILE_PATH} {graph_path} 4")
+        # open_mp_output = open_mp_stream_project.read()
+        # open_mp_output_dict = json.loads(open_mp_output)
+        # open_mp_end = datetime.now()
+        # open_mp_runtime = (open_mp_end - open_mp_start) # .total_seconds()
+        #
+        # weight_match_str = f"{bcolors.OKGREEN}MATCH{bcolors.ENDC}     " if open_mp_output_dict['MAX_WEIGHT'] == seq_output_dict['MAX_WEIGHT'] == testcase['max_weight'] else f"{bcolors.FAIL}NOT MATCH{bcolors.ENDC} "
+        # print(f"max weight {weight_match_str}, REF: {testcase['max_weight']}, SEQ: {seq_output_dict['MAX_WEIGHT']}, OMP: {open_mp_output_dict['MAX_WEIGHT']}")
+        #
+        # rec_calls_less_str = f"{bcolors.OKGREEN}LESS{bcolors.ENDC}       " if seq_output_dict['REC_CALLS'] < testcase['rec_calls_num'] else f"{bcolors.FAIL}MORE (or =){bcolors.ENDC}"
+        # print(f"rec calls {rec_calls_less_str}, REF: {testcase['rec_calls_num']}, SEQ: {seq_output_dict['REC_CALLS']}, OMP: {open_mp_output_dict['REC_CALLS']}")
+        # # print(f"REC CALL, REF: {testcase['max_weight']}, RESULT: {output_dict['REC_CALLS']}")
+        # runtime_str = f"{bcolors.FAIL}SEQ LESS{bcolors.ENDC}     " if seq_runtime < open_mp_runtime else f"{bcolors.OKGREEN}SEQ MORE{bcolors.ENDC}     "
+        # print(f"Runtime {runtime_str}, SEQ: {seq_runtime}, OMP: {open_mp_runtime}")
 
 
 if __name__ == '__main__':

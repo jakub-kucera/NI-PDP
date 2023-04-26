@@ -14,7 +14,7 @@
 using namespace std;
 
 //#define USE_SUPER_OPTIMIZATION true
-#define USE_SUPER_OPTIMIZATION false
+#define USE_SUPER_OPTIMIZATION true
 #define MAX_QUEUE_SIZE 1000
 
 #define NO_COLOR 0

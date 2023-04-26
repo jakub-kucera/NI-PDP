@@ -16,7 +16,7 @@ using namespace std;
 #define LOG_FILE_PATH "./log.txt"
 
 //#define USE_SUPER_OPTIMIZATION true
-#define USE_SUPER_OPTIMIZATION false
+#define USE_SUPER_OPTIMIZATION true
 //#define MPI_MAX_QUEUE_SIZE 16
 #define MPI_MAX_QUEUE_SIZE_MULT 6
 //#define MP_MAX_QUEUE_SIZE 100
@@ -678,5 +678,5 @@ int main(int argc, char *argv[]) {
 // OMPI_CXX=g++ mpic++ -fopenmp -O2 -o ../main_mpi  ../main.cpp  && mpirun --allow-run-as-root  -np 4 ../main_mpi   ../graphs/graf_12_9.txt 1 &&
 // OMPI_CXX=g++ mpic++ -fopenmp -O2 -o ../main_mpi  ../main.cpp  && python3 main.py
 
-// OMPI_CXX=g++ mpic++ -fopenmp -O2 -o ../main_mpi  ../main.cpp
+// OMPI_CXX=g++ mpic++ -fopenmp -O2 -o ../main_mpi  ../main_mpi.cpp
 //  OMP_NUM_THREADS=6  mpirun --allow-run-as-root  -np 4 ../main_mpi  ../graphs/graf_12_9.txt  4

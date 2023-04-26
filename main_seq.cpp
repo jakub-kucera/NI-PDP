@@ -7,6 +7,7 @@
 
 using namespace std;
 
+#define USE_SUPER_OPTIMIZATION true
 
 #define NO_COLOR 0
 #define RED 1
@@ -145,10 +146,27 @@ void rec_func(uint16_t current_edge, uint64_t current_weight, uint16_t used_edge
         c_edge->is_used = true;
         rec_func(current_edge + 1, current_weight + edges[current_edge].weight, used_edges+1);
 //        // no color
-        vertex_colors[c_edge->a_vertex] = NO_COLOR;
-        vertex_colors[c_edge->b_vertex] = NO_COLOR;
-        c_edge->is_used = false;
-        rec_func(current_edge + 1, current_weight, used_edges);
+
+        if (USE_SUPER_OPTIMIZATION){
+            vertex_colors[c_edge->a_vertex] = BLUE;
+            vertex_colors[c_edge->b_vertex] = BLUE;
+            c_edge->is_used = false;
+            rec_func(current_edge + 1, current_weight, used_edges);
+
+            vertex_colors[c_edge->a_vertex] = RED;
+            vertex_colors[c_edge->b_vertex] = RED;
+            c_edge->is_used = false;
+            rec_func(current_edge + 1, current_weight, used_edges);
+
+            vertex_colors[c_edge->a_vertex] = NO_COLOR;
+            vertex_colors[c_edge->b_vertex] = NO_COLOR;
+        }
+        else {
+            vertex_colors[c_edge->a_vertex] = NO_COLOR;
+            vertex_colors[c_edge->b_vertex] = NO_COLOR;
+            c_edge->is_used = false;
+            rec_func(current_edge + 1, current_weight, used_edges);
+        }
 //        vertex_colors[c_edge->a_vertex] = BLUE;
 //        vertex_colors[c_edge->b_vertex] = BLUE;
 //        c_edge->is_used = false;
@@ -178,44 +196,67 @@ void rec_func(uint16_t current_edge, uint64_t current_weight, uint16_t used_edge
         c_edge->is_used = true;
         rec_func(current_edge + 1, current_weight + edges[current_edge].weight, used_edges+1);
 
-        vertex_colors[c_edge->a_vertex] = NO_COLOR;
+        if (USE_SUPER_OPTIMIZATION){
+            vertex_colors[c_edge->a_vertex] = RED;
+        }
+        else {
+            vertex_colors[c_edge->a_vertex] = NO_COLOR;
+        }
 //        vertex_colors[c_edge->a_vertex] = RED;
         c_edge->is_used = false;
         rec_func(current_edge + 1, current_weight, used_edges);
-//        vertex_colors[c_edge->a_vertex] = NO_COLOR;
+        vertex_colors[c_edge->a_vertex] = NO_COLOR;
     }
     else if (vertex_colors[c_edge->a_vertex] == NO_COLOR  && vertex_colors[c_edge->b_vertex] == BLUE) {
         vertex_colors[c_edge->a_vertex] = RED;
         c_edge->is_used = true;
         rec_func(current_edge + 1, current_weight + edges[current_edge].weight, used_edges+1);
 
-        vertex_colors[c_edge->a_vertex] = NO_COLOR;
+//        vertex_colors[c_edge->a_vertex] = NO_COLOR;
 //        vertex_colors[c_edge->a_vertex] = BLUE;
+        if (USE_SUPER_OPTIMIZATION){
+            vertex_colors[c_edge->a_vertex] = BLUE;
+        }
+        else {
+            vertex_colors[c_edge->a_vertex] = NO_COLOR;
+        }
         c_edge->is_used = false;
         rec_func(current_edge + 1, current_weight, used_edges);
-//        vertex_colors[c_edge->a_vertex] = NO_COLOR;
+        vertex_colors[c_edge->a_vertex] = NO_COLOR;
     }
     else if (vertex_colors[c_edge->a_vertex] == RED  && vertex_colors[c_edge->b_vertex] == NO_COLOR) {
         vertex_colors[c_edge->b_vertex] = BLUE;
         c_edge->is_used = true;
         rec_func(current_edge + 1, current_weight + edges[current_edge].weight, used_edges+1);
 
-        vertex_colors[c_edge->b_vertex] = NO_COLOR;
+//        vertex_colors[c_edge->b_vertex] = NO_COLOR;
+        if (USE_SUPER_OPTIMIZATION){
+            vertex_colors[c_edge->b_vertex] = RED;
+        }
+        else {
+            vertex_colors[c_edge->b_vertex] = NO_COLOR;
+        }
 //        vertex_colors[c_edge->b_vertex] = RED;
         c_edge->is_used = false;
         rec_func(current_edge + 1, current_weight, used_edges);
-//        vertex_colors[c_edge->b_vertex] = NO_COLOR;
+        vertex_colors[c_edge->b_vertex] = NO_COLOR;
     }
     else if (vertex_colors[c_edge->a_vertex] == BLUE  && vertex_colors[c_edge->b_vertex] == NO_COLOR) {
         vertex_colors[c_edge->b_vertex] = RED;
         c_edge->is_used = true;
         rec_func(current_edge + 1, current_weight + edges[current_edge].weight, used_edges+1);
 
-        vertex_colors[c_edge->b_vertex] = NO_COLOR;
+//        vertex_colors[c_edge->b_vertex] = NO_COLOR;
+        if (USE_SUPER_OPTIMIZATION){
+            vertex_colors[c_edge->b_vertex] = BLUE;
+        }
+        else {
+            vertex_colors[c_edge->b_vertex] = NO_COLOR;
+        }
 //        vertex_colors[c_edge->b_vertex] = BLUE;
         c_edge->is_used = false;
         rec_func(current_edge + 1, current_weight, used_edges);
-//        vertex_colors[c_edge->b_vertex] = NO_COLOR;
+        vertex_colors[c_edge->b_vertex] = NO_COLOR;
     }
 
     return;
@@ -306,3 +347,4 @@ int main(int argc, char *argv[]) {
 }
 
 // g++ -std=c++17 -Wall -pedantic -Wno-long-long -O2 -o main_seq main_seq.cpp && ./main_seq graphs/graf_15_5.txt  1
+// g++ -std=c++17 -Wall -pedantic -Wno-long-long -O2 -o main_seq main_seq.cpp && ./main_seq graph-hard/graf-21-15.txt 1
